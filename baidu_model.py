@@ -88,7 +88,7 @@ class BaiDu():
 
 
 if __name__ == '__main__':
-    baidu = BaiDu(uid='pwubais628@sogou.com',
-                  passwd='vtbianj317')
+    baidu = BaiDu(uid='3321@sogou.com',
+                  passwd='321321')
 
     print baidu.login()

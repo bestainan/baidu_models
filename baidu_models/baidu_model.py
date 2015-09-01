@@ -43,8 +43,7 @@ class BaiDu():
         code = Verification_Code()
         win = ''
         while 1:
-            if  u'请输入验证码' in self.session.content or \
-                u'请您填写验证码' in self.session.content:
+            if  u'请输入验证码' in self.session.content or u'请您填写验证码' in self.session.content:
                 print u'正在输入验证码'
                 bsoup = BeautifulSoup(self.session.content)
                 img_url = bsoup.find(id=self.img_selector)['src']

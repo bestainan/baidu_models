@@ -27,7 +27,7 @@ class Verification_Code:
 
     def parese_img(self):
         '''
-        解析图片
+        解析 图片
         '''
         with open(VERIFICATION_IMG_PATH + 'img.png','rb') as file:
             img = file.read()

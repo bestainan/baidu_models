@@ -5,7 +5,7 @@ import urllib2
 import os
 import time
 VERIFICATION_IMG_PATH = "verification_imgs/"
-HACKER_URL = "http://192.168.100.108/vcode/test.php"
+HACKER_URL = "http://0.0.0.0/vcode/test.php"
 class Verification_Code:
     '''
     破解验证码
@@ -32,7 +32,7 @@ class Verification_Code:
         with open(VERIFICATION_IMG_PATH + 'img.png','rb') as file:
             img = file.read()
 
-            url = "http://192.168.100.108/vcode/test.php"
+            url = "http://10.0.0.0/vcode/test.php"
             dat = {
             "code":img,
             "type":62,

@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c868ae86-34dd-4d30-8253-a75f650b64bc" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/verification_imgs/img.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/.idea/.name" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/baidu_model.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/.idea/baidu_models.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/.idea/misc.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/baidu_models/verification_code.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="work.iws" />
     <ignored path=".idea/workspace.xml" />

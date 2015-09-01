@@ -19,6 +19,7 @@ class BaiDu():
         self.return_url = ''
         self.return_img = ''
         self.session = ghost.start()
+        self.code = Verification_Code()
         try:
             self.session.delete_cookies()
             self.session.set_proxy(host=proxy['localhost'],
@@ -38,57 +39,61 @@ class BaiDu():
         self.input_wverifycode_selector = "TANGRAM__PSP_3__verifyCode"
 
     def login(self):
-        self.session.open(self.baidu_url)
         self.session.open(self.baidu_login_url)
-        code = Verification_Code()
-        win = ''
+
         while 1:
-            if  u'请输入验证码' in self.session.content or u'请您填写验证码' in self.session.content:
-                print u'正在输入验证码'
-                bsoup = BeautifulSoup(self.session.content)
-                img_url = bsoup.find(id=self.img_selector)['src']
-                code.save_img(img_url)
-                result, num = code.parese_img()
-                print result
+            self.session.show()
+            resquest =  self.session.evaluate("document.getElementById('TANGRAM__PSP_3__error').innerHTML;")[0]
+
+            if u'登录成功' in self.session.content:
+                self.session.show()
+                return self.use_hacker
+                self.session.show()
+            elif u'请输入验证码' == resquest or \
+                            u'请您填写验证码' == resquest or \
+                            u'您输入的验证码有误' == resquest:
+
+                result = self.pare_verifi()
                 self.session.evaluate(
                     'document.getElementById("TANGRAM__PSP_3__verifyCode").value = "{res}";'.format(
                         res=result,
                     ))
-                time.sleep(1)
-                self.session.evaluate('document.getElementById("TANGRAM__PSP_3__submit").click();')
-                if self.session.wait_for_text(u'登录成功') or self.session.wait_for_text(u'帐户设置'):
-                    self.session.capture_to('ok.jpg')
-                    self.use_hacker += num
-                    time.sleep(2)
-                    # 百度首页的 个人id   s_username_top
-                    #                  等待加载这个试试
-                    page,result = self.session.open(r'http://i.baidu.com',timeout=50)
-                    if page.url == 'http://i.baidu.com/':
-                         return u"""
-                                  登录成功!
-                                  使用验证码次数：{code_num}
-                                  当前URL：{now_url}
-                            """.format(code_num=self.use_hacker, now_url=page.url)
 
-                    else:
-                        print u'登录失败, 重新登录'
-                        self.session.open(self.baidu_login_url)
-                        continue
-            else:
-                print u'直接输入账号密码'
+                self.session.click("#TANGRAM__PSP_3__submit")
                 self.session.show()
-                self.check_parese()
+            elif u'请您填写手机/邮箱/用户名' == resquest:
+                self.session.set_field_value(self.user_selector, self.uid)
+                self.session.show()
+
+            elif u'请您填写密码' == resquest:
+                self.session.set_field_value(self.passwd_selector, self.passwd)
+                self.session.show()
+
+            elif u'登录超时' == resquest:
                 self.session.click(self.submit_selector)
                 self.session.show()
 
-    def check_parese(self):
-        self.session.set_field_value(self.user_selector, self.uid)
-        self.session.set_field_value(self.passwd_selector, self.passwd)
+            elif u'登录中' in self.session.content:
+                time.sleep(1)
+                self.session.show()
+            elif resquest == '':
+                self.session.click(self.submit_selector)
+                self.session.show()
 
+    def pare_verifi(self):
+        bsoup = BeautifulSoup(self.session.content)
+        img_url = bsoup.find(id=self.img_selector)['src']
+        self.code.save_img(img_url)
+        result, num = self.code.parese_img()
+        self.use_hacker += num
+        return result
+
+    def __del__(self):
+        del self
 
 
 if __name__ == '__main__':
-    baidu = BaiDu(uid='3321@sogou.com',
-                  passwd='321321')
+    baidu = BaiDu(uid='pwubais628@sogou.com',
+                  passwd='vtbianj317')
 
-    print baidu.login()
+    print u'验证码使用次数:{num}'.format(num = baidu.login())

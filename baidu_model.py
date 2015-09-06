@@ -8,7 +8,6 @@ import urllib, urllib2
 import time
 import re
 from ghost import Ghost
-from ghost import Session
 from ghost import TimeoutError
 from verification_code import Verification_Code
 from bs4 import BeautifulSoup
@@ -27,7 +26,7 @@ class BaiDu():
         self.use_hacker = 0
         self.return_url = ''
         self.return_img = ''
-        self.session = ghost.start()
+        self.session = ghost.start(display=True)
         self.code = Verification_Code()
         try:
             # self.session.delete_cookies()
@@ -52,14 +51,14 @@ class BaiDu():
         self.input_wverifycode_selector = "TANGRAM__PSP_3__verifyCode"
 
     def login(self):
-        self.session.open(self.baidu_login_url,timeout=60)
+        page,b = self.session.open(self.baidu_login_url,timeout=60)
         coun = 0
         while 1:
             self.session.show()
             try:
                 resquest =  self.session.evaluate("document.getElementById('TANGRAM__PSP_3__error').innerHTML;")[0]
                 if coun >= 3:
-                    self.session.open(self.baidu_login_url,timeout=60)
+                    page,b = self.session.open(self.baidu_login_url,timeout=60)
                     coun = 0
 
                 elif u'登录成功' in self.session.content or 'ibx-uc' in self.session.content or u'快速通道' in self.session.content:
@@ -99,7 +98,7 @@ class BaiDu():
 
 
                 else:
-                    self.session.open(self.baidu_login_url)
+                    page,b = self.session.open(self.baidu_login_url)
             except TimeoutError:
                 continue
 
@@ -123,74 +122,95 @@ class BaiDu():
         url,info
         return OK_img
         '''
-        print u'开始发帖'
-        while 1:
-            page,b = self.session.open(r"http://tieba.baidu.com/p/4014668676",timeout=120)
-            assert page.http_status == 200 and u'<em>发 表</em>' in self.session.content
-            self.session.wait_for_selector('#ueditor_replace')
-            self.session.evaluate('window.scrollTo(0,document.body.scrollHeight);')
-            time.sleep(2)
-            self.session.evaluate('window.scrollTo(0,document.body.scrollHeight);')
+        stop = 1
+        while stop:
+            try:
+                self.session.open("http://tieba.baidu.com/p/4014668676")
+            except:
+                pass
 
-            if self.session.wait_for_selector('#ueditor_replace'):
-                self.session.show()
-                print u'写内容'
-                self.session.evaluate("document.getElementById('ueditor_replace').innerHTML = '12fdlgslkjflwejrr;lwejr3123123'")
-                time.sleep(1)
-                print u'等待按钮'
-                self.session.wait_for_selector(".j_submit")
-                time.sleep(3)
+            while stop:
+                try:
+                    self.session.wait_for_selector(".close-btn")
+                    self.session.click(".close-btn",expect_loading=True)
+                except:
+                    pass
+                if self.session.evaluate('document.readyState')[0] != 'loading':
+                    print self.session.evaluate('document.readyState')[0]
+                    while stop:
+                        try:
+                            self.window_height_str = int(self.session.evaluate('document.body.scrollHeight')[0])
 
-                # self.session.evaluate('document.getElementsByClassName("j_submit").id = "mysubmit";document.getElementById("mysubmit").click();')
-                print self.session.evaluate('document.getElementsByClassName("j_submit").click()')
-                self.session.wait_for_alert(timeout=120)
-                self.session.capture_to('asd.jpg')
+                            temp_height_str = 0
+                            while temp_height_str < self.window_height_str:
+                                self.session.evaluate('window.scrollTo(0,%s);' % temp_height_str)
+                                while 1:
+                                    if self.session.evaluate('document.readyState')[0] != "loading":
+                                        print self.session.evaluate('document.readyState')[0]
+                                        break
 
-                time.sleep(3)
-                self.session.show()
+                                    else:
+                                        time.sleep(0.3)
+                                        print u'等待加载'
+                                self.session.evaluate('window.scrollTo(0,document.body.scrollHeight);')
+                                self.session.show()
+                                temp_height_str +=  500
+
+                            self.session.evaluate("document.getElementById('ueditor_replace').innerHTML = '%s'" % u'新人来报道啦。 大家请多关照,需要好东西的联系我哦')
+                            self.session.click("div .j_floating a")
+                            try:
+                                self.session.wait_for_text(u'发表成功')
+                                print u'拍照'
+                                self.session.capture_to('1.jpg')
+                                stop = 0
+                                break
+                            except:
+                                continue
+
+                        except TimeoutError:
+                            self.session.evaluate('window.scrollTo(0,0);')
+                            continue
+
+                else:
+                    self.session.show()
 
 
 
+        # html = self.session.content
+        # img_url = re.findall(r'<span class="tbui_captcha_img_wrap j_captcha_img_wrapper"><img src="(.*)"></span><span class="tbui_captcha_buttons">',html)
+        # img_url = 'http://tieba.baidu.com' + img_url[0]
+        # result = self.pare_verifi(img_url)
+        # time.sleep(1)
+        # a,b = self.session.evaluate("document.getElementsByClassName('j_captcha_input')")
+        # print a
+        # print ################
+        # print b
+        #
+        # time.sleep(2)
+        # self.session.wait_callback
+        # self.session.capture_to('ok.jpg')
+        # self.session.show()
+        # raw_input('wait...')
+        # self.session.click('.ui_btn ui_btn_m j_ok',expect_loading = True)
+        # self.session.show()
+        # raw_input('wait...')
+        # self.session.evaluate(
+        # 'document.getElementById("TANGRAM__PSP_3__verifyCode").value = "{res}";'.format(
+        #     res=result,
+        # ))
+        # self.session.click("#TANGRAM__PSP_3__submit")
+        # print img_url
+        # except TimeoutError,e:
+        #     print e
+        #
+        #     continue
 
-                print '2'
-                # html = self.session.content
-                # img_url = re.findall(r'<span class="tbui_captcha_img_wrap j_captcha_img_wrapper"><img src="(.*)"></span><span class="tbui_captcha_buttons">',html)
-                # img_url = 'http://tieba.baidu.com' + img_url[0]
-                # result = self.pare_verifi(img_url)
-                # time.sleep(1)
-                # a,b = self.session.evaluate("document.getElementsByClassName('j_captcha_input')")
-                # print a
-                # print ################
-                # print b
-                #
-                # time.sleep(2)
-                # self.session.wait_callback
-                # self.session.capture_to('ok.jpg')
-                # self.session.show()
-                # raw_input('wait...')
-                # self.session.click('.ui_btn ui_btn_m j_ok',expect_loading = True)
-                # self.session.show()
-                # raw_input('wait...')
-                # self.session.evaluate(
-                # 'document.getElementById("TANGRAM__PSP_3__verifyCode").value = "{res}";'.format(
-                #     res=result,
-                # ))
-                # self.session.click("#TANGRAM__PSP_3__submit")
-                # print img_url
-                # except TimeoutError,e:
-                #     print e
-                #
-                #     continue
-
-                print u'拍照留念'
-                self.session.capture_to('ok.jpg')
-                break
 
     def baidu_post_msg(self,url):
         '''
         return post_url & the post_img
         '''
-        self.session.open(r'http://tieba.baidu.com/f?kw=%CC%A9%B5%CF%D0%DC')
+        page,b =  self.session.open(r'http://tieba.baidu.com/f?kw=%CC%A9%B5%CF%D0%DC')
         pass
 
 
@@ -202,8 +222,8 @@ class BaiDu():
 
 
 if __name__ == '__main__':
-    baidu = BaiDu(uid='pwubais628@sogou.com',
-                  passwd='vtbianj317')
+    baidu = BaiDu(uid='aqvjrv87148@163.com',
+                  passwd='Q2jQHk')
 
     print u'验证码使用次数:{num}'.format(num = baidu.login())
     baidu.baidu_reply()

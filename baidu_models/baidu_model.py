@@ -214,8 +214,8 @@ class BaiDu():
 #todo:再看看能不能解决 url的问题
 if __name__ == '__main__':
 
-    baidu = BaiDu(uid='aqvjrv87148@163.com',
-                  passwd='Q2jQHk')
+    baidu = BaiDu(uid='333@163.com',
+                  passwd='3333')
 
     print u'登录完成 验证码使用次数:{num}'.format(num = baidu.login())
     # baidu.baidu_reply()
@@ -229,5 +229,5 @@ if __name__ == '__main__':
 
     http://tieba.baidu.com/f?kw=%C9%D9%C4%EA%CB%C4%B4%F3%C3%FB%B2%B6
     '''
-    while 1:
-        baidu.post_msg(url = 'http://tieba.baidu.com/f?kw=%C9%D9%C4%EA%CB%C4%B4%F3%C3%FB%B2%B6',info=info)
+    
+    baidu.post_msg(url = 'http://tieba.baidu.com/f?kw=%C9%D9%C4%EA%CB%C4%B4%F3%C3%FB%B2%B6',info=info)
